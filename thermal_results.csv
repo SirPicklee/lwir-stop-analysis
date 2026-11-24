@@ -4,3 +4,10 @@ B_70C_solar,70,160,all_bodies,74.78,77.16,
 B_70C_solar,70,160,Mercek1_Ge,74.78,74.88,
 B_70C_solar,70,160,Mercek2_ZnSe,75.21,75.21,
 B_70C_solar,70,160,Mercek3_Ge,76.00,76.00,
+C_70C_solar_uniform_CFDh,70,160,Mercek1_Ge,,,73.80
+C_70C_solar_uniform_CFDh,70,160,Mercek2_ZnSe,,,74.22
+C_70C_solar_uniform_CFDh,70,160,Mercek3_Ge,,,74.99
+D_70C_solar_onesided_CFDh,70,500cos,all_bodies,73.765,76.141,74.65
+D_70C_solar_onesided_CFDh,70,500cos,Mercek1_Ge,73.765,74.011,73.837
+D_70C_solar_onesided_CFDh,70,500cos,Mercek2_ZnSe,74.106,74.343,74.215
+D_70C_solar_onesided_CFDh,70,500cos,Mercek3_Ge,74.916,75.050,74.979

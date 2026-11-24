@@ -1,0 +1,8 @@
+quantity,value,unit,note
+free_stream_velocity,10,m/s,velocity inlet
+turbulence_model,k-omega SST,,steady RANS + energy
+first_cell_height,0.03,mm,15 inflation layers on pod wall
+y_plus_avg,0.55,,area-weighted on pod
+h_area_avg_pod,66.96,W/m2K,Fluent Surface Heat Transfer Coef.
+h_correlation_churchill_bernstein,53,W/m2K,infinite cylinder
+h_used_section3,55,W/m2K,rounded correlation value

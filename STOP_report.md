@@ -8,6 +8,8 @@ date: "November 2026"
 
 A three-element Ge/ZnSe/Ge objective (f = 50 mm, f/1.25, 8–12 µm) was designed in Zemax OpticStudio and reaches the diffraction limit at 20 °C (MTF 0.353 vs 0.355 at 42 lp/mm). Its thermal focus shift is linear at −5.9 µm/°C, about 20 depths of focus over −40…+70 °C. A titanium housing reduces the shift by only ~10 %. A passive Ge/ZnSe/AMTIR-1 solution removes it but degrades MTF at f/1.25, so an active focus compensator is required (≈0.69 mm travel). A steady-state Ansys thermal model of the lens and housing (internal dissipation 3.5 W, wind convection, solar load) shows lens temperatures 4.8–6.0 °C above a 70 °C ambient with intra-lens gradients below 0.1 °C. The model is mesh-independent within 0.002 % and closes the energy balance. Feeding these temperatures back into Zemax yields 35 µm of extra defocus relative to the ambient-based prediction, equal to one depth of focus. The compensator must therefore be referenced to the lens-mount temperature.
 
+A follow-up study (Section 5) replaced the correlation-based convection with an external-flow Fluent CFD solution (k-ω SST, y+ ≈ 0.55), which gives h = 67 W/m²·K, 22–26 % above the correlation. This cools the lenses by about 1 °C and reduces the extra defocus to ≈26 µm (≈0.8 depths of focus). A one-sided, cosine-weighted solar load leaves the mean lens temperatures unchanged (within 0.04 °C). It creates intra-lens gradients of at most 0.25 °C, corresponding to at most ≈λ/20 PV optical path difference, which is negligible.
+
 
 ![Thermal focus shift versus temperature; uniform-temperature cases and STOP case](00_focus_shift_vs_temperature.png)
 
@@ -113,18 +115,85 @@ A compensator positioned from ambient temperature would leave the image ~35 µm 
 
 ![STOP through-focus](07_throughfocus_STOP_75p5C.png)
 
+## 5. Project 1b — CFD convection and one-sided solar loading
+
+Two simplifications from Section 3 were removed: the correlation-based external h, and the circumferentially smeared solar load.
+
+### 5.1 External flow (Ansys Fluent 2025 R2)
+
+- **Domain:** SpaceClaim enclosure around the pod, with the pod body suppressed for physics. Boundaries are a velocity inlet at 10 m/s, a pressure outlet, symmetry side walls, and an isothermal pod wall.
+- **Mesh:** an inflation layer on the pod wall (first cell 0.03 mm, 15 layers). The resulting **y+ is 0.55**, so the viscous sublayer is resolved and no wall functions are needed.
+- **Model:** steady RANS with k-ω SST and the energy equation. Reference temperature for h is set to the free-stream value.
+- **Result:** area-weighted surface heat-transfer coefficient on the pod **h = 66.96 W/m²·K**.
+  - This is 26 % above the Churchill–Bernstein value (53) and 22 % above the 55 used in Section 3.
+  - The difference is expected: the correlation is for an infinite cylinder, while the pod has end faces and a finite length, which thin the boundary layer.
+
+The local h on the pod ranges from ≈12 W/m²·K along the separation lines to ≈137 W/m²·K at the front stagnation line and the end-face edges. Behind the pod, the wake shows a velocity deficit at mid-length.
+
+| Velocity magnitude, mid-length cross-section (flow left → right) | Surface heat-transfer coefficient on the pod |
+|---|---|
+| ![](11_cfd_velocity_midplane.png) | ![](12_cfd_h_on_pod.png) |
+
+**Coupling to Mechanical:** the full surface h distribution was mapped onto the thermal model, both through the Workbench link and directly from the Fluent `.cas/.dat.h5` files. Mapping reached 100 %, but Mechanical crashed at solve every time (likely memory on the available workstation). The area-averaged CFD h was therefore applied as a uniform film coefficient. This is a documented limitation (see below).
+
+### 5.2 One-sided solar loading
+
+Section 3 smeared the solar input around the circumference: 1000 W/m² × α = 0.5 gives 500 W/m² on the projected area, which averages to 160 W/m² over the tube surface.
+
+Here the sun is placed overhead (+Z). The absorbed flux follows the local incidence angle:
+
+q(θ) = 500 · cos θ W/m² on the sunlit half, and 0 on the shaded half.
+
+In Mechanical this is a spatially tabular heat flux in global Z: 0 at z ≤ 0, rising linearly to 5 × 10⁻⁷ kW/mm² at z = +26 mm. Because z = R·cos θ on the tube surface, this reproduces the cosine distribution exactly, without splitting the geometry. The total absorbed power (≈1.95 W) is the same as in the smeared case.
+
+### 5.3 Results (70 °C ambient + solar)
+
+| Case | Lens 1 (Ge) | Lens 2 (ZnSe) | Lens 3 (Ge) | Model min / max |
+|---|---|---|---|---|
+| h = 55 (correlation), uniform sun — Section 3 | 74.83 | 75.21 | 76.00 | 74.8 / 77.2 °C |
+| h = 66.96 (CFD), uniform sun | 73.80 | 74.22 | 74.99 | — |
+| **h = 66.96 (CFD), one-sided sun** | **73.84** | **74.22** | **74.98** | 73.77 / 76.14 °C |
+
+Lens values are mean temperatures in °C.
+
+Intra-lens temperature spread in the one-sided case (max − min):
+
+| Lens | ΔT | dn/dT (10⁻⁶ /K) | Thickness | Optical path difference (PV) |
+|---|---|---|---|---|
+| 1 (Ge) | 0.25 °C | ≈396 | 5 mm | ≈0.50 µm ≈ λ/20 |
+| 2 (ZnSe) | 0.24 °C | ≈61 | 4 mm | ≈0.06 µm ≈ λ/170 |
+| 3 (Ge) | 0.13 °C | ≈396 | 5 mm | ≈0.26 µm ≈ λ/38 |
+
+The OPD values are an upper bound from ΔT × dn/dT × thickness at λ = 10 µm.
+
+| One-sided sun, full model | Lens 1 gradient |
+|---|---|
+| ![](08_thermal_70C_onesided_solar_CFDh.png) | ![](09_lens1_gradient_onesided.png) |
+
+![Lens temperature comparison](10_project1b_lens_temperatures.png)
+
+### 5.4 Findings
+
+1. **CFD lowers lens temperatures by about 1.0 °C** compared with the correlation. The mean lens temperature rise over ambient drops from ≈5.3 °C to ≈4.3 °C.
+   - With the −5.9 µm/°C focus slope, the STOP defocus beyond the ambient-based value drops from ≈35 µm to **≈26 µm (≈0.8 × depth of focus)**.
+   - This is a linear estimate from the slope; it was not re-run in Zemax.
+   - The conclusion of Section 4 still holds: the compensator needs a lens-mount temperature sensor.
+2. **Sun direction does not change mean lens temperatures** (all within 0.04 °C). For the same absorbed power, the smeared solar load is a valid simplification for focus prediction.
+3. **One-sided sun creates intra-lens gradients of at most 0.25 °C.** The worst-case thermo-optic OPD is ≈λ/20 PV, which is well inside the diffraction limit. Line-of-sight tilt and wavefront error from solar asymmetry are negligible for this pod.
+
 ## Assumptions and limitations
 
 - The optical temperature in each Zemax configuration is uniform; the three lens temperatures (74.8–76.0 °C) are represented by their mean.
 - The thermal model is conduction-only: internal air convection and radiation are not modelled, and lenses are flat disks.
-- External h comes from a correlation, not CFD. Solar load is smeared uniformly, so no lateral gradient (tilt) is captured.
+- External h: Sections 3–4 use a correlation. Section 5 uses the Fluent area-averaged h as a uniform film coefficient, because mapping the full CFD surface distribution crashed Mechanical on the available hardware.
+- Solar absorptivity and the overhead sun direction are assumptions. Sky and ground radiation exchange is not modelled.
 - No thermo-elastic (structural) analysis was run. The sub-0.1 °C intra-lens gradients suggest surface deformation is negligible here, but this is not verified.
 - The detector format and solar absorptivity are assumed values.
 
 ## Next steps
 
-1. External-flow CFD (Fluent) to replace the correlation-based h with a computed distribution.
-2. One-sided solar loading to capture lateral gradients and line-of-sight tilt.
+1. ~~External-flow CFD~~ and ~~one-sided solar loading~~: done in Section 5.
+2. Map the full CFD h distribution (on a workstation with more memory) to check the uniform-h assumption.
 3. Thermo-structural analysis in Static Structural, with Zernike decomposition of the surface deformation fed back to Zemax.
 4. Transient warm-up to size the compensator control loop.
 
