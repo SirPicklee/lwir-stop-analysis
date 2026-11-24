@@ -1,0 +1,6 @@
+case,ambient_C,solar_W_m2,body,T_min_C,T_max_C,T_avg_C
+A_20C_no_solar,20,0,all_bodies,22.82,25.24,23.67
+B_70C_solar,70,160,all_bodies,74.78,77.16,
+B_70C_solar,70,160,Mercek1_Ge,74.78,74.88,
+B_70C_solar,70,160,Mercek2_ZnSe,75.21,75.21,
+B_70C_solar,70,160,Mercek3_Ge,76.00,76.00,

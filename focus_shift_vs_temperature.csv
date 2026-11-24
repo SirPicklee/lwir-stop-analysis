@@ -1,0 +1,5 @@
+case,temperature_C,best_focus_shift_mm,peak_mtf_20lpmm,source
+uniform,-40,0.36,0.689,zemax/v1_nominal.zmx config 2 (FFT through-focus, 0 deg field)
+uniform,20,0.00,0.68,zemax/v1_nominal.zmx config 1
+uniform,70,-0.29,0.675,zemax/v1_nominal.zmx config 3
+STOP_70C_solar,75.5,-0.325,0.68,zemax/v2_stop_75C.zmx config 3 (lens temps from Ansys case B)
