@@ -9,7 +9,7 @@ date: "November 2026"
 A three-element Ge/ZnSe/Ge objective (f = 50 mm, f/1.25, 8–12 µm) was designed in Zemax OpticStudio and reaches the diffraction limit at 20 °C (MTF 0.353 vs 0.355 at 42 lp/mm). Its thermal focus shift is linear at −5.9 µm/°C, about 20 depths of focus over −40…+70 °C. A titanium housing reduces the shift by only ~10 %. A passive Ge/ZnSe/AMTIR-1 solution removes it but degrades MTF at f/1.25, so an active focus compensator is required (≈0.69 mm travel). A steady-state Ansys thermal model of the lens and housing (internal dissipation 3.5 W, wind convection, solar load) shows lens temperatures 4.8–6.0 °C above a 70 °C ambient with intra-lens gradients below 0.1 °C. The model is mesh-independent within 0.002 % and closes the energy balance. Feeding these temperatures back into Zemax yields 35 µm of extra defocus relative to the ambient-based prediction, equal to one depth of focus. The compensator must therefore be referenced to the lens-mount temperature.
 
 
-![Thermal focus shift versus temperature; uniform-temperature cases and STOP case](../results/figures/00_focus_shift_vs_temperature.png)
+![Thermal focus shift versus temperature; uniform-temperature cases and STOP case](00_focus_shift_vs_temperature.png)
 
 ## 1. Optical design (Zemax OpticStudio 2025 R2)
 
@@ -23,7 +23,7 @@ A three-element Ge/ZnSe/Ge objective (f = 50 mm, f/1.25, 8–12 µm) was designe
 | Elements | Ge / ZnSe / Ge, all spherical |
 | Total track | 71.85 mm (back focal distance 4.91 mm) |
 
-Prescription at 20 °C (`zemax/v1_nominal.zmx`, configuration 1):
+Prescription at 20 °C (`v1_nominal.zmx`, configuration 1):
 
 | Surface | Radius (mm) | Thickness (mm) | Material | Clear semi-diameter (mm) |
 |---|---|---|---|---|
@@ -36,7 +36,7 @@ Prescription at 20 °C (`zemax/v1_nominal.zmx`, configuration 1):
 
 The design is diffraction-limited at 20 °C: polychromatic MTF at the 42 lp/mm Nyquist frequency is 0.353 against a diffraction limit of 0.355 (99 %). The through-focus MTF at 20 lp/mm peaks at 0.68, at the nominal image plane.
 
-![Nominal MTF](../results/figures/01_mtf_nominal_20C.png)
+![Nominal MTF](01_mtf_nominal_20C.png)
 
 ## 2. Thermal defocus with uniform temperature
 
@@ -54,7 +54,7 @@ Using Zemax *Make Thermal*: −40 / 20 / +70 °C, glass dn/dT and CTE from the I
 
 | −40 °C | 20 °C | +70 °C |
 |---|---|---|
-| ![](../results/figures/02_throughfocus_m40C.png) | ![](../results/figures/03_throughfocus_20C.png) | ![](../results/figures/04_throughfocus_p70C.png) |
+| ![](02_throughfocus_m40C.png) | ![](03_throughfocus_20C.png) | ![](04_throughfocus_p70C.png) |
 
 ### Athermalization options investigated
 
@@ -66,7 +66,7 @@ Using Zemax *Make Thermal*: −40 / 20 / +70 °C, glass dn/dT and CTE from the I
 
 ## 3. Thermal model (Ansys Workbench / Mechanical 2025 R2, steady-state)
 
-**Geometry:** `geometry/lwir_geometri_spaceclaim.py`, a parametric SpaceClaim script. Lenses are modelled as flat disks of their centre thickness and clear diameter. Each lens sits in an aluminium mount ring inside a Ø46/52 mm tube with a 3 mm rear cap. The detector is a Ø12 × 1 mm silicon disk. Nine bonded contacts are detected automatically.
+**Geometry:** `lwir_geometri_spaceclaim.py`, a parametric SpaceClaim script. Lenses are modelled as flat disks of their centre thickness and clear diameter. Each lens sits in an aluminium mount ring inside a Ø46/52 mm tube with a 3 mm rear cap. The detector is a Ø12 × 1 mm silicon disk. Nine bonded contacts are detected automatically.
 
 **Materials:**
 
@@ -97,11 +97,11 @@ Using Zemax *Make Thermal*: −40 / 20 / +70 °C, glass dn/dT and CTE from the I
 
 | Case A: 20 °C | Case B: 70 °C + solar |
 |---|---|
-| ![](../results/figures/05_thermal_20C.png) | ![](../results/figures/06_thermal_70C_solar.png) |
+| ![](05_thermal_20C.png) | ![](06_thermal_70C_solar.png) |
 
 ## 4. Closing the STOP loop
 
-The mean Ansys lens temperature for case B (≈75.5 °C) was applied as the configuration temperature in Zemax (`zemax/v2_stop_75C.zmx`):
+The mean Ansys lens temperature for case B (≈75.5 °C) was applied as the configuration temperature in Zemax (`v2_stop_75C.zmx`):
 
 | | Best-focus shift |
 |---|---|
@@ -111,7 +111,7 @@ The mean Ansys lens temperature for case B (≈75.5 °C) was applied as the conf
 
 A compensator positioned from ambient temperature would leave the image ~35 µm out of focus. Read from the through-focus curve, that lowers MTF at 20 lp/mm from ≈0.68 to ≈0.55, and the loss is larger at Nyquist. The temperature sensor for the compensator belongs at the lens mount.
 
-![STOP through-focus](../results/figures/07_throughfocus_STOP_75p5C.png)
+![STOP through-focus](07_throughfocus_STOP_75p5C.png)
 
 ## Assumptions and limitations
 

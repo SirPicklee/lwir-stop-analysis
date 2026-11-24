@@ -4,7 +4,7 @@ Design of a 50 mm f/1.25 long-wave infrared (8–12 µm) objective in Zemax Opti
 
 **Main result:** under a 70 °C ambient with solar load, the lenses run 5–6 °C above ambient. That adds **35 µm of defocus** on top of what the ambient temperature alone predicts, which is about one full depth of focus (±31 µm). A focus compensator therefore has to be driven by a sensor at the lens mount, not by ambient temperature.
 
-![Thermal focus shift](results/figures/00_focus_shift_vs_temperature.png)
+![Thermal focus shift](00_focus_shift_vs_temperature.png)
 
 ---
 
@@ -20,7 +20,7 @@ Design of a 50 mm f/1.25 long-wave infrared (8–12 µm) objective in Zemax Opti
 | Elements | Ge / ZnSe / Ge, all spherical |
 | Total track | 71.85 mm (back focal distance 4.91 mm) |
 
-Prescription at 20 °C (`zemax/v1_nominal.zmx`, configuration 1):
+Prescription at 20 °C (`v1_nominal.zmx`, configuration 1):
 
 | Surface | Radius (mm) | Thickness (mm) | Material | Clear semi-diameter (mm) |
 |---|---|---|---|---|
@@ -33,7 +33,7 @@ Prescription at 20 °C (`zemax/v1_nominal.zmx`, configuration 1):
 
 The design is diffraction-limited at 20 °C: polychromatic MTF at the 42 lp/mm Nyquist frequency is 0.353 against a diffraction limit of 0.355 (99 %). The through-focus MTF at 20 lp/mm peaks at 0.68, at the nominal image plane.
 
-![Nominal MTF](results/figures/01_mtf_nominal_20C.png)
+![Nominal MTF](01_mtf_nominal_20C.png)
 
 ## 2. Thermal defocus with uniform temperature
 
@@ -51,7 +51,7 @@ Using Zemax *Make Thermal*: −40 / 20 / +70 °C, glass dn/dT and CTE from the I
 
 | −40 °C | 20 °C | +70 °C |
 |---|---|---|
-| ![](results/figures/02_throughfocus_m40C.png) | ![](results/figures/03_throughfocus_20C.png) | ![](results/figures/04_throughfocus_p70C.png) |
+| ![](02_throughfocus_m40C.png) | ![](03_throughfocus_20C.png) | ![](04_throughfocus_p70C.png) |
 
 ### Athermalization options investigated
 
@@ -63,7 +63,7 @@ Using Zemax *Make Thermal*: −40 / 20 / +70 °C, glass dn/dT and CTE from the I
 
 ## 3. Thermal model (Ansys Workbench / Mechanical 2025 R2, steady-state)
 
-**Geometry:** `geometry/lwir_geometri_spaceclaim.py`, a parametric SpaceClaim script. Lenses are modelled as flat disks of their centre thickness and clear diameter. Each lens sits in an aluminium mount ring inside a Ø46/52 mm tube with a 3 mm rear cap. The detector is a Ø12 × 1 mm silicon disk. Nine bonded contacts are detected automatically.
+**Geometry:** `lwir_geometri_spaceclaim.py`, a parametric SpaceClaim script. Lenses are modelled as flat disks of their centre thickness and clear diameter. Each lens sits in an aluminium mount ring inside a Ø46/52 mm tube with a 3 mm rear cap. The detector is a Ø12 × 1 mm silicon disk. Nine bonded contacts are detected automatically.
 
 **Materials:**
 
@@ -94,11 +94,11 @@ Using Zemax *Make Thermal*: −40 / 20 / +70 °C, glass dn/dT and CTE from the I
 
 | Case A: 20 °C | Case B: 70 °C + solar |
 |---|---|
-| ![](results/figures/05_thermal_20C.png) | ![](results/figures/06_thermal_70C_solar.png) |
+| ![](05_thermal_20C.png) | ![](06_thermal_70C_solar.png) |
 
 ## 4. Closing the STOP loop
 
-The mean Ansys lens temperature for case B (≈75.5 °C) was applied as the configuration temperature in Zemax (`zemax/v2_stop_75C.zmx`):
+The mean Ansys lens temperature for case B (≈75.5 °C) was applied as the configuration temperature in Zemax (`v2_stop_75C.zmx`):
 
 | | Best-focus shift |
 |---|---|
@@ -108,7 +108,7 @@ The mean Ansys lens temperature for case B (≈75.5 °C) was applied as the conf
 
 A compensator positioned from ambient temperature would leave the image ~35 µm out of focus. Read from the through-focus curve, that lowers MTF at 20 lp/mm from ≈0.68 to ≈0.55, and the loss is larger at Nyquist. The temperature sensor for the compensator belongs at the lens mount.
 
-![STOP through-focus](results/figures/07_throughfocus_STOP_75p5C.png)
+![STOP through-focus](07_throughfocus_STOP_75p5C.png)
 
 ## Assumptions and limitations
 
@@ -125,15 +125,17 @@ A compensator positioned from ambient temperature would leave the image ~35 µm 
 3. Thermo-structural analysis in Static Structural, with Zernike decomposition of the surface deformation fed back to Zemax.
 4. Transient warm-up to size the compensator control loop.
 
-## Repository layout
+## Repository contents
 
-```
-zemax/      v1_nominal.zmx (−40/20/+70 °C configs), v2_stop_75C.zmx (STOP case)
-ansys/      stop_termal.wbpz — Workbench archive (results excluded; press Solve to regenerate)
-geometry/   lwir_geometri_spaceclaim.py — SpaceClaim script that builds the thermal geometry
-results/    figures/, data/ (CSV tables), plot_focus_shift.py
-report/     technical report (PDF + Markdown)
-```
+| File | Content |
+|---|---|
+| `v1_nominal.zmx` | Zemax design with −40 / 20 / +70 °C thermal configurations |
+| `v2_stop_75C.zmx` | Zemax STOP case (75.5 °C lens temperature from Ansys) |
+| `stop_termal.wbpz` | Ansys Workbench archive (results excluded; press Solve to regenerate) |
+| `lwir_geometri_spaceclaim.py` | SpaceClaim script that builds the thermal geometry |
+| `STOP_report.pdf` / `STOP_report.md` | Technical report |
+| `*.png` | Figures 00–07 used in this README |
+| `*.csv`, `plot_focus_shift.py` | Result tables and the script that draws the summary chart |
 
 **Tools:** Ansys Zemax OpticStudio 2025 R2 · Ansys Workbench / SpaceClaim / Mechanical 2025 R2 · Python (matplotlib)
 
